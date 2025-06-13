@@ -8,6 +8,7 @@ COLLATE utf8mb4_spanish_ci;
 CREATE TABLE finca_prueba.fincas (
   id INT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(45) NOT NULL,
+  propietario_id INT NOT NULL,
   detalle_id INT NOT NULL,
   contacto_id INT NOT NULL,
   direccion_id INT NOT NULL,
@@ -29,12 +30,24 @@ CREATE TABLE finca_prueba.horarios_funcionamiento (
 ENGINE = InnoDB;
 
 
+-- creo tabla propietarios
+CREATE TABLE finca_prueba.propietarios (
+  id INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(45) NOT NULL,
+  apellido VARCHAR(45) NOT NULL,
+  fecha_nac  DATE NOT NULL,
+  contacto_id INT NOT NULL,
+  usuario_id INT NOT NULL,
+  PRIMARY KEY (id))
+ENGINE = InnoDB;
+
+
 -- creo tabla contactos
 CREATE TABLE finca_prueba.contactos (
   id INT NOT NULL AUTO_INCREMENT,
   email VARCHAR(45) NOT NULL,
   telefono VARCHAR(45) NOT NULL,
-  nombre_responsable VARCHAR(45) NOT NULL,
+  email_alternativo VARCHAR(45) NOT NULL,
   PRIMARY KEY (id))
 ENGINE = InnoDB;
 
@@ -203,7 +216,7 @@ descripcion VARCHAR(100)
 -- FOREIGN KEYS
 
 -- FINCA - DETALLE 1-1
--- FINCA - CONTACTO 1-1
+-- FINCA - PROPIETARIO 1-1
 -- FINCA - DIRECCION 1-1
 
 
@@ -211,8 +224,8 @@ ALTER TABLE finca_prueba.fincas
 ADD CONSTRAINT fk_finca_detalle
 FOREIGN KEY (detalle_id) REFERENCES finca_prueba.detalles(id)
 ON DELETE CASCADE,
-ADD CONSTRAINT fk_finca_contacto
-FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id)
+ADD CONSTRAINT fk_finca_propietario
+FOREIGN KEY (propietario_id) REFERENCES finca_prueba.propietarios(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_finca_direccion
 FOREIGN KEY (direccion_id) REFERENCES finca_prueba.direcciones(id)
@@ -311,7 +324,11 @@ FOREIGN KEY (modo_id) REFERENCES finca_prueba.modo_de_pago(id)
 ON DELETE CASCADE;
 
 
-
+-- PROPIETARIO - contacto
+ALTER TABLE finca_prueba.propietarios
+ADD CONSTRAINT fk_propietarios_contacto
+FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id)
+ON DELETE CASCADE;
 
 
 
@@ -376,6 +393,21 @@ INSERT INTO finca_prueba.usuario_rol (rol_id, usuario_id) VALUES
 (3, 1); 
 
 
+-- agrego contacto
+INSERT INTO finca_prueba.contactos 
+(email, telefono, email_alternativo) 
+VALUES
+('info@casamontana.com', '+54 9 11 1234-5678', 'info2@casamontana.com'),
+('reservas@cabanalago.com', '+54 9 261 432-1987', 'reservas2@cabanalago.com'),
+('contacto@ranchorural.com', '+54 9 351 765-4321', 'contacto2@ranchorural.com');
+
+-- agrego propietarios
+INSERT INTO finca_prueba.propietarios (nombre, apellido, fecha_nac, contacto_id, usuario_id) VALUES
+('Carlos', 'Ramírez', '1980-05-12', 1, 1),
+('Lucía', 'González', '1992-09-23', 2, 2),
+('Miguel', 'Fernández', '1975-01-30', 3, 3);
+
+
 -- agrego clientes
 INSERT INTO finca_prueba.clientes (nombre, apellido, dni, correo, usuario_id) VALUES
 ('Juan', 'Pérez', '30123456', 'juan.perez@gmail.com', 3),
@@ -409,13 +441,6 @@ VALUES
 ('Cabaña acogedora cerca del lago', 2, 1, 80, 4, TRUE, FALSE, TRUE),
 ('Amplio rancho para grupos grandes', 5, 3, 200, 12, FALSE, TRUE, TRUE);
 
--- agrego contacto
-INSERT INTO finca_prueba.contactos 
-(email, telefono, nombre_responsable) 
-VALUES
-('info@casamontana.com', '+54 9 11 1234-5678', 'María Fernández'),
-('reservas@cabanalago.com', '+54 9 261 432-1987', 'Carlos Gómez'),
-('contacto@ranchorural.com', '+54 9 351 765-4321', 'Laura Pérez');
 
 -- agrego direccion
 INSERT INTO finca_prueba.direcciones
@@ -428,11 +453,11 @@ VALUES
 
 -- agrego finca
 INSERT INTO finca_prueba.fincas
-(nombre, detalle_id, contacto_id, direccion_id, tarifa_hora) 
+(nombre, propietario_id, detalle_id, contacto_id, direccion_id, tarifa_hora) 
 VALUES
-('Casa Montaña', 1, 1, 1, 1500.00),
-('Cabaña Lago Azul', 2, 2, 2, 1200.00),
-('Rancho Tilcara', 3, 3, 3, 1800.00);
+('Casa Montaña', 1, 1, 1, 1, 1500.00),
+('Cabaña Lago Azul', 2, 2, 2, 2, 1200.00),
+('Rancho Tilcara', 3, 3, 3, 3, 1800.00);
 
 
 -- agrego fechas especiales
@@ -497,23 +522,23 @@ INSERT INTO finca_prueba.comprobante_pago (pago_id, monto, modo_id, descripcion)
 
 
 
---EJEMPLOS CONSULTA
+-- EJEMPLOS CONSULTA
 
---FINCAS ABIERTA LOS VIERNES
+-- FINCAS ABIERTA LOS VIERNES
 SELECT f.nombre, hf.dia_semana, hf.hora_inicio, hf.hora_fin
 FROM finca_prueba.fincas f
 JOIN finca_prueba.horarios_funcionamiento hf ON f.id = hf.finca_id
 WHERE hf.dia_semana = 'Viernes';
 
 
---FECHAS ESPECIALES CON RECARGO
+-- FECHAS ESPECIALES CON RECARGO
 SELECT f.nombre AS finca, fe.fecha, fe.motivo, fe.recargo
 FROM finca_prueba.fechas_especiales fe
 JOIN finca_prueba.fincas f ON fe.finca_id = f.id
 WHERE fe.recargo IS NOT NULL AND fe.recargo > 0;
 
 
---USUARIOS CON ROL ADMIN
+-- USUARIOS CON ROL ADMIN
 SELECT u.id, u.nombre_usuario, u.email
 FROM finca_prueba.usuarios u
 JOIN finca_prueba.usuario_rol ur ON u.id = ur.usuario_id
