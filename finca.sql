@@ -175,6 +175,16 @@ es_portada BOOLEAN NOT NULL,
 finca_id INT NOT NULL
 );
 
+-- TABLA documentacion
+
+CREATE TABLE finca_prueba.documentacion(
+id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+propietario_id INT NOT NULL,
+plano_catastral VARCHAR(45) NOT NULL,
+escritura_propiedad VARCHAR(45) NOT NULL,
+impuesto_inmuebles VARCHAR(45) NOT NULL
+);
+
 -- PAGOS
 
 CREATE table finca_prueba.pagos(
@@ -330,7 +340,11 @@ ADD CONSTRAINT fk_propietarios_contacto
 FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id)
 ON DELETE CASCADE;
 
-
+-- DOCUMENTACION - propietario
+ALTER TABLE finca_prueba.documentacion
+ADD CONSTRAINT fk_documentacion_propietarios
+FOREIGN KEY (propietario_id) REFERENCES finca_prueba.propietarios(id)
+ON DELETE CASCADE;
 
 
 
