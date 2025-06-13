@@ -209,11 +209,14 @@ descripcion VARCHAR(100)
 
 ALTER TABLE finca_prueba.fincas
 ADD CONSTRAINT fk_finca_detalle
-FOREIGN KEY (detalle_id) REFERENCES finca_prueba.detalles(id),
+FOREIGN KEY (detalle_id) REFERENCES finca_prueba.detalles(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_finca_contacto
-FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id),
+FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_finca_direccion
-FOREIGN KEY (direccion_id) REFERENCES finca_prueba.direcciones(id);
+FOREIGN KEY (direccion_id) REFERENCES finca_prueba.direcciones(id)
+ON DELETE CASCADE;
 
 
 -- FINCA - horarios_funcionamiento 1-n
@@ -221,7 +224,8 @@ FOREIGN KEY (direccion_id) REFERENCES finca_prueba.direcciones(id);
 ALTER TABLE finca_prueba.horarios_funcionamiento
 ADD CONSTRAINT fk_finca_horarios
 FOREIGN KEY (finca_id)
-REFERENCES finca_prueba.fincas(id);
+REFERENCES finca_prueba.fincas(id)
+ON DELETE CASCADE;
 
 
 -- RESERVA - fincas 1-n
@@ -229,66 +233,82 @@ REFERENCES finca_prueba.fincas(id);
 
 ALTER TABLE finca_prueba.reservas
 ADD CONSTRAINT fk_reserva_fincas
-FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id),
+FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_reserva_clientes
-FOREIGN KEY (cliente_id) REFERENCES finca_prueba.clientes(id);
+FOREIGN KEY (cliente_id) REFERENCES finca_prueba.clientes(id)
+ON DELETE CASCADE;
 
 
 -- CLIENTE - usuarios 1-1
 
 ALTER TABLE finca_prueba.clientes
 ADD CONSTRAINT fk_clientes_usuarios
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id);
+FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+ON DELETE CASCADE;
 
 -- USUARIO_ROL - usuario
 -- USUARIO_ROL - rol
+-- (n-n)
 ALTER TABLE finca_prueba.usuario_rol
 ADD CONSTRAINT fk_usuario_rol_rol
-FOREIGN KEY (rol_id) REFERENCES finca_prueba.roles(id),
+FOREIGN KEY (rol_id) REFERENCES finca_prueba.roles(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_usuario_rol_usuario
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id);
+FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+ON DELETE CASCADE;
 
 -- ROL_PERMISOS - permisos
 -- ROL_PERMISOS - roles
+-- (n-n)
 ALTER TABLE finca_prueba.rol_permisos
 ADD CONSTRAINT fk_rol_permisos_rol
-FOREIGN KEY (rol_id) REFERENCES finca_prueba.roles(id),
+FOREIGN KEY (rol_id) REFERENCES finca_prueba.roles(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_rol_permisos_permiso
-FOREIGN KEY (permiso_id) REFERENCES finca_prueba.permisos(id);
+FOREIGN KEY (permiso_id) REFERENCES finca_prueba.permisos(id)
+ON DELETE CASCADE;
 
 -- AUTENTICACION EXTERNA - usuario
 ALTER TABLE finca_prueba.autenticacion_externa
 ADD CONSTRAINT fk_autenticacion_externa_usuario
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id);
+FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+ON DELETE CASCADE;
 
 
 -- FECHAS_ESPECIALES - finca
 ALTER TABLE finca_prueba.fechas_especiales
 ADD CONSTRAINT fk_fecha_especial_finca
-FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id);
+FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id)
+ON DELETE CASCADE;
 
 
 -- IMAGENES_FINCAS - fincas
 ALTER TABLE finca_prueba.imagenes_fincas
 ADD CONSTRAINT fk_imagenes_fincas_finca
-FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id);
+FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id)
+ON DELETE CASCADE;
 
 
 -- PAGOS - modo de pago
 -- PAGOS - reserva
 ALTER TABLE finca_prueba.pagos
 ADD CONSTRAINT fk_pagos_modo_de_pago
-FOREIGN KEY (modopago_id) REFERENCES finca_prueba.modo_de_pago(id),
+FOREIGN KEY (modopago_id) REFERENCES finca_prueba.modo_de_pago(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_pagos_reserva
-FOREIGN KEY (reserva_id) REFERENCES finca_prueba.reservas(id);
+FOREIGN KEY (reserva_id) REFERENCES finca_prueba.reservas(id)
+ON DELETE CASCADE;
 
 -- COMPROBANTE DE PAGO - pagos
 -- COMPROBANTE DE PAGO - modo_pago
 ALTER TABLE finca_prueba.comprobante_pago
 ADD CONSTRAINT fk_comprobante_pago_pagos
-FOREIGN KEY (pago_id) REFERENCES finca_prueba.pagos(id),
+FOREIGN KEY (pago_id) REFERENCES finca_prueba.pagos(id)
+ON DELETE CASCADE,
 ADD CONSTRAINT fk_comprobante_modo
-FOREIGN KEY (modo_id) REFERENCES finca_prueba.modo_de_pago(id);
+FOREIGN KEY (modo_id) REFERENCES finca_prueba.modo_de_pago(id)
+ON DELETE CASCADE;
 
 
 
@@ -362,7 +382,15 @@ INSERT INTO finca_prueba.clientes (nombre, apellido, dni, correo, usuario_id) VA
 ('Laura', 'Gómez', '28987654', 'laura.gomez@gmail.com', 2),
 ('Carlos', 'Lopez', '32123456', 'carlos.lopez@gmail.com', 1);
 
+/*
+DELETE FROM finca_prueba.clientes
+WHERE id = 1;
 
+
+UPDATE finca_prueba.clientes
+SET apellido = 'perez'
+WHERE id = 2;
+*/
 
 -- agrego autenticacion externa
 INSERT INTO finca_prueba.autenticacion_externa 
@@ -448,7 +476,7 @@ INSERT INTO finca_prueba.modo_de_pago (tipo, detalles) VALUES
 ('Tarjeta', 'Visa'),
 ('Tarjeta', 'Mastercard'),
 ('Transferencia', 'MercadoPago'),
-('Transferencia', 'Bancaria');;
+('Transferencia', 'Bancaria');
 
 -- agrego pagos
 INSERT INTO finca_prueba.pagos (
