@@ -4,8 +4,24 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_spanish_ci;
 
 
--- creo tabla finca
+-- definimos la DB que vamos a trabajar para no aclararlo en cada consulta y que sean mas legibles
+USE finca_prueba;
+
+/*
 CREATE TABLE finca_prueba.fincas (
+  id INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(45) NOT NULL,
+  propietario_id INT NOT NULL,
+  detalle_id INT NOT NULL,
+  direccion_id INT NOT NULL,
+  tarifa_hora DECIMAL(10, 2) NOT NULL,
+  PRIMARY KEY (id))
+ENGINE = InnoDB;
+*/
+
+
+-- creo tabla finca
+CREATE TABLE fincas (
   id INT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(45) NOT NULL,
   propietario_id INT NOT NULL,
@@ -17,7 +33,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla horarios_funcionamiento
-CREATE TABLE finca_prueba.horarios_funcionamiento (
+CREATE TABLE horarios_funcionamiento (
   id INT NOT NULL AUTO_INCREMENT,
   finca_id INT NOT NULL,
   hora_inicio TIME NOT NULL,
@@ -30,7 +46,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla propietarios
-CREATE TABLE finca_prueba.propietarios (
+CREATE TABLE propietarios (
   id INT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(45) NOT NULL,
   apellido VARCHAR(45) NOT NULL,
@@ -42,7 +58,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla contactos
-CREATE TABLE finca_prueba.contactos (
+CREATE TABLE contactos (
   id INT NOT NULL AUTO_INCREMENT,
   email VARCHAR(45) NOT NULL,
   telefono VARCHAR(45) NOT NULL,
@@ -52,7 +68,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla detalle
-CREATE TABLE finca_prueba.detalles (
+CREATE TABLE detalles (
   id INT NOT NULL AUTO_INCREMENT,
   descripcion VARCHAR(400) NOT NULL,
   cant_habitacion INT NOT NULL,
@@ -67,7 +83,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla direccion
-CREATE TABLE finca_prueba.direcciones (
+CREATE TABLE direcciones (
   id INT NOT NULL AUTO_INCREMENT,
   calle VARCHAR(45) NOT NULL,
   altura INT NULL,
@@ -79,7 +95,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla reserva
-CREATE TABLE finca_prueba.reservas (
+CREATE TABLE reservas (
   id INT NOT NULL AUTO_INCREMENT,
   finca_id INT NOT NULL,
   cliente_id INT NOT NULL,
@@ -92,7 +108,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla fecha_especial
-CREATE TABLE finca_prueba.fechas_especiales (
+CREATE TABLE fechas_especiales (
   id INT NOT NULL AUTO_INCREMENT,
   fecha DATE NOT NULL,
   dia_semana VARCHAR(45) NOT NULL,
@@ -107,7 +123,7 @@ ENGINE = InnoDB;
 
 
 -- creo tabla cliente
-CREATE TABLE finca_prueba.clientes (
+CREATE TABLE clientes (
   id INT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(45) NOT NULL,
   apellido VARCHAR(45) NOT NULL,
@@ -119,7 +135,7 @@ ENGINE = InnoDB;
 
 
 -- Tabla Usuarios
-CREATE TABLE finca_prueba.usuarios (
+CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(40) NOT NULL,
     email VARCHAR(40) NOT NULL UNIQUE,
@@ -128,14 +144,14 @@ CREATE TABLE finca_prueba.usuarios (
 );
 
 -- Tabla Rol
-CREATE TABLE finca_prueba.roles (
+CREATE TABLE roles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(30) NOT NULL UNIQUE
 );
 
 
 -- Tabla Usuario_Rol (tabla intermedia 1-1)
-CREATE TABLE finca_prueba.usuario_rol (
+CREATE TABLE usuario_rol (
   rol_id INT NOT NULL,
   usuario_id INT NOT NULL
 );
@@ -143,21 +159,21 @@ CREATE TABLE finca_prueba.usuario_rol (
 
 
 -- Tabla Permisos
-CREATE TABLE finca_prueba.permisos (
+CREATE TABLE permisos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(200) NOT NULL
 );
 
 
 -- Tabla Rol_Permisos (tabla intermedia 1-1)
-CREATE TABLE finca_prueba.rol_permisos (
+CREATE TABLE rol_permisos (
   rol_id INT NOT NULL,
   permiso_id INT NOT NULL
 );
 
 
 -- TABLA AUTENTICACION EXTERNA
-CREATE TABLE finca_prueba.autenticacion_externa (
+CREATE TABLE autenticacion_externa (
   id INT NOT NULL AUTO_INCREMENT,
   nombre_proveedor VARCHAR(45) NOT NULL,
   proveedor_usuario_id VARCHAR(45) NOT NULL,
@@ -167,7 +183,7 @@ ENGINE = InnoDB;
 
 -- TABLA IMAGEN_FINCA
 
-CREATE TABLE finca_prueba.imagenes_fincas(
+CREATE TABLE imagenes_fincas(
 id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 url VARCHAR(2048) NOT NULL,
 es_portada BOOLEAN NOT NULL,
@@ -176,7 +192,7 @@ finca_id INT NOT NULL
 
 -- TABLA documentacion
 
-CREATE TABLE finca_prueba.documentacion(
+CREATE TABLE documentacion(
 id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
 propietario_id INT NOT NULL,
 plano_catastral VARCHAR(45) NOT NULL,
@@ -186,7 +202,7 @@ impuesto_inmuebles VARCHAR(45) NOT NULL
 
 -- PAGOS
 
-CREATE table finca_prueba.pagos(
+CREATE table pagos(
 id INT NOT NULL AUTO_INCREMENT,
 reserva_id INT NOT NULL,
 monto_total DECIMAL(10, 2) NOT NULL,
@@ -198,14 +214,14 @@ estado_pago BOOLEAN,
 PRIMARY KEY (id)
 );
 
-CREATE table finca_prueba.modo_de_pago(
+CREATE table modo_de_pago(
 id INT NOT NULL AUTO_INCREMENT,
 tipo VARCHAR(15) NOT NULL,
 detalles VARCHAR(60) NOT NULL,
 PRIMARY KEY(id) 
 );
 
-CREATE TABLE finca_prueba.comprobante_pago(
+CREATE TABLE comprobante_pago(
 id INT AUTO_INCREMENT PRIMARY KEY,
 pago_id INT,
 monto DECIMAL(10,2),
@@ -229,126 +245,150 @@ descripcion VARCHAR(100)
 -- FINCA - DIRECCION 1-1
 
 
-ALTER TABLE finca_prueba.fincas
+ALTER TABLE fincas
 ADD CONSTRAINT fk_finca_detalle
-FOREIGN KEY (detalle_id) REFERENCES finca_prueba.detalles(id)
+FOREIGN KEY (detalle_id) REFERENCES detalles(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_finca_propietario
-FOREIGN KEY (propietario_id) REFERENCES finca_prueba.propietarios(id)
+FOREIGN KEY (propietario_id) REFERENCES propietarios(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_finca_direccion
-FOREIGN KEY (direccion_id) REFERENCES finca_prueba.direcciones(id)
+FOREIGN KEY (direccion_id) REFERENCES direcciones(id)
 ON DELETE CASCADE;
+
+
+/*
+
+SE PUEDE ESTABLECER FKs AL MOMENTO DE CREAR LAS TABLAS
+
+CREATE TABLE fincas (
+  id INT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(45) NOT NULL,
+  propietario_id INT NOT NULL,
+  detalle_id INT NOT NULL,
+  direccion_id INT NOT NULL,
+  tarifa_hora DECIMAL(10, 2) NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_finca_propietario FOREIGN KEY (propietario_id) REFERENCES propietarios(id)
+  ON DELETE CASCADE,
+  CONSTRAINT fk_finca_detalle FOREIGN KEY (detalle_id) REFERENCES detalles(id)
+  ON DELETE CASCADE,
+  CONSTRAINT fk_finca_direccion FOREIGN KEY (direccion_id) REFERENCES direcciones(id)
+  ON DELETE CASCADE
+) ENGINE = InnoDB;
+*/
+
+
 
 
 -- FINCA - horarios_funcionamiento 1-n
 
-ALTER TABLE finca_prueba.horarios_funcionamiento
+ALTER TABLE horarios_funcionamiento
 ADD CONSTRAINT fk_finca_horarios
 FOREIGN KEY (finca_id)
-REFERENCES finca_prueba.fincas(id)
+REFERENCES fincas(id)
 ON DELETE CASCADE;
 
 
 -- RESERVA - fincas 1-n
 -- RESERVA - clientes 1-n
 
-ALTER TABLE finca_prueba.reservas
+ALTER TABLE reservas
 ADD CONSTRAINT fk_reserva_fincas
-FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id)
+FOREIGN KEY (finca_id) REFERENCES fincas(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_reserva_clientes
-FOREIGN KEY (cliente_id) REFERENCES finca_prueba.clientes(id)
+FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 ON DELETE CASCADE;
 
 
 -- CLIENTE - usuarios 1-1
 
-ALTER TABLE finca_prueba.clientes
+ALTER TABLE clientes
 ADD CONSTRAINT fk_clientes_usuarios
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ON DELETE CASCADE;
 
 -- USUARIO_ROL - usuario
 -- USUARIO_ROL - rol
 -- (n-n)
-ALTER TABLE finca_prueba.usuario_rol
+ALTER TABLE usuario_rol
 ADD CONSTRAINT fk_usuario_rol_rol
-FOREIGN KEY (rol_id) REFERENCES finca_prueba.roles(id)
+FOREIGN KEY (rol_id) REFERENCES roles(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_usuario_rol_usuario
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ON DELETE CASCADE;
 
 -- ROL_PERMISOS - permisos
 -- ROL_PERMISOS - roles
 -- (n-n)
-ALTER TABLE finca_prueba.rol_permisos
+ALTER TABLE rol_permisos
 ADD CONSTRAINT fk_rol_permisos_rol
-FOREIGN KEY (rol_id) REFERENCES finca_prueba.roles(id)
+FOREIGN KEY (rol_id) REFERENCES roles(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_rol_permisos_permiso
-FOREIGN KEY (permiso_id) REFERENCES finca_prueba.permisos(id)
+FOREIGN KEY (permiso_id) REFERENCES permisos(id)
 ON DELETE CASCADE;
 
 -- AUTENTICACION EXTERNA - usuario
-ALTER TABLE finca_prueba.autenticacion_externa
+ALTER TABLE autenticacion_externa
 ADD CONSTRAINT fk_autenticacion_externa_usuario
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ON DELETE CASCADE;
 
 
 -- FECHAS_ESPECIALES - finca
-ALTER TABLE finca_prueba.fechas_especiales
+ALTER TABLE fechas_especiales
 ADD CONSTRAINT fk_fecha_especial_finca
-FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id)
+FOREIGN KEY (finca_id) REFERENCES fincas(id)
 ON DELETE CASCADE;
 
 
 -- IMAGENES_FINCAS - fincas
-ALTER TABLE finca_prueba.imagenes_fincas
+ALTER TABLE imagenes_fincas
 ADD CONSTRAINT fk_imagenes_fincas_finca
-FOREIGN KEY (finca_id) REFERENCES finca_prueba.fincas(id)
+FOREIGN KEY (finca_id) REFERENCES fincas(id)
 ON DELETE CASCADE;
 
 
 -- PAGOS - modo de pago
 -- PAGOS - reserva
-ALTER TABLE finca_prueba.pagos
+ALTER TABLE pagos
 ADD CONSTRAINT fk_pagos_modo_de_pago
-FOREIGN KEY (modopago_id) REFERENCES finca_prueba.modo_de_pago(id)
+FOREIGN KEY (modopago_id) REFERENCES modo_de_pago(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_pagos_reserva
-FOREIGN KEY (reserva_id) REFERENCES finca_prueba.reservas(id)
+FOREIGN KEY (reserva_id) REFERENCES reservas(id)
 ON DELETE CASCADE;
 
 -- COMPROBANTE DE PAGO - pagos
 -- COMPROBANTE DE PAGO - modo_pago
-ALTER TABLE finca_prueba.comprobante_pago
+ALTER TABLE comprobante_pago
 ADD CONSTRAINT fk_comprobante_pago_pagos
-FOREIGN KEY (pago_id) REFERENCES finca_prueba.pagos(id)
+FOREIGN KEY (pago_id) REFERENCES pagos(id)
 ON DELETE CASCADE,
 ADD CONSTRAINT fk_comprobante_modo
-FOREIGN KEY (modo_id) REFERENCES finca_prueba.modo_de_pago(id)
+FOREIGN KEY (modo_id) REFERENCES modo_de_pago(id)
 ON DELETE CASCADE;
 
 
 -- PROPIETARIO - contacto
-ALTER TABLE finca_prueba.propietarios
+ALTER TABLE propietarios
 ADD CONSTRAINT fk_propietarios_contacto
-FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id)
+FOREIGN KEY (contacto_id) REFERENCES contactos(id)
 ON DELETE CASCADE;
 
 -- PROPIETARIO - usuario
-ALTER TABLE finca_prueba.propietarios
+ALTER TABLE propietarios
 ADD CONSTRAINT fk_propietarios_usuario
-FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ON DELETE CASCADE;
 
 -- DOCUMENTACION - propietario
-ALTER TABLE finca_prueba.documentacion
+ALTER TABLE documentacion
 ADD CONSTRAINT fk_documentacion_propietarios
-FOREIGN KEY (propietario_id) REFERENCES finca_prueba.propietarios(id)
+FOREIGN KEY (propietario_id) REFERENCES propietarios(id)
 ON DELETE CASCADE;
 
 
@@ -358,21 +398,21 @@ ON DELETE CASCADE;
 
 
 -- agrego permisos
-INSERT INTO finca_prueba.permisos (nombre) VALUES
+INSERT INTO permisos (nombre) VALUES
 ('Crear reservas'),
 ('Modificar información de fincas'),
 ('Ver historial de clientes');
 
 
 -- agrego roles
-INSERT INTO finca_prueba.roles (nombre) VALUES
+INSERT INTO roles (nombre) VALUES
 ('Propietario'),
 ('Cliente');
 
 
 -- asignos permisos a roles
 
-INSERT INTO finca_prueba.rol_permisos (rol_id, permiso_id) VALUES
+INSERT INTO rol_permisos (rol_id, permiso_id) VALUES
 (1, 3), -- Propietario puede ver historial de clientes
 (1, 2), -- Propietario puede modificar información de fincas
 (2, 1); -- Cliente puede crear reservas
@@ -383,7 +423,7 @@ INSERT INTO finca_prueba.rol_permisos (rol_id, permiso_id) VALUES
 
 -- agrego usuarios (cuenta_activa es por default true al crear)
 
-INSERT INTO finca_prueba.usuarios (nombre_usuario, email, contrasenia) VALUES
+INSERT INTO usuarios (nombre_usuario, email, contrasenia) VALUES
 ('robertofinca', 'roberto@gmail.com', '123'),
 ('eduardofinca', 'eduardo@gmail.com', '123'),
 ('luciana2025', 'luciana@gmail.com', '123'),
@@ -399,7 +439,7 @@ WHERE id = 1;
 
 
 -- asignos roles a usuarios
-INSERT INTO finca_prueba.usuario_rol (rol_id, usuario_id) VALUES
+INSERT INTO usuario_rol (rol_id, usuario_id) VALUES
 (1, 1),
 (1, 2),
 (2, 3),
@@ -407,12 +447,12 @@ INSERT INTO finca_prueba.usuario_rol (rol_id, usuario_id) VALUES
 (2, 5),
 (1, 6);
 -- robertofinca también es cliente por ejemplo
-INSERT INTO finca_prueba.usuario_rol (rol_id, usuario_id) VALUES
+INSERT INTO usuario_rol (rol_id, usuario_id) VALUES
 (2, 1); 
 
 
 -- agrego contacto
-INSERT INTO finca_prueba.contactos 
+INSERT INTO contactos 
 (email, telefono, email_alternativo) 
 VALUES
 ('roberto@gmail.com', '+54 9 11 1234-5678', 'info2@casamontana.com'),
@@ -420,14 +460,14 @@ VALUES
 ('mariana@gmail.com', '+54 9 351 765-4321', 'contacto2@ranchorural.com');
 
 -- agrego propietarios
-INSERT INTO finca_prueba.propietarios (nombre, apellido, fecha_nac, contacto_id, usuario_id) VALUES
+INSERT INTO propietarios (nombre, apellido, fecha_nac, contacto_id, usuario_id) VALUES
 ('Roberto', 'Ramírez', '1980-05-12', 1, 1),
 ('Eduardo', 'González', '1992-09-23', 2, 2),
 ('Mariana', 'Fernández', '1975-01-30', 3, 6);
 
 
 -- agrego clientes
-INSERT INTO finca_prueba.clientes (nombre, apellido, dni, correo, usuario_id) VALUES
+INSERT INTO clientes (nombre, apellido, dni, correo, usuario_id) VALUES
 ('Luciana', 'Pérez', '30123456', 'luciana@gmail.com', 3),
 ('Martina', 'Sosa', '28987654', 'martinasosa@gmail.com', 4),
 ('Francisco', 'Lopez', '32123456', 'franciscolopez@gmail.com', 5);
@@ -443,7 +483,7 @@ WHERE id = 2;
 */
 
 -- agrego autenticacion externa
-INSERT INTO finca_prueba.autenticacion_externa 
+INSERT INTO autenticacion_externa 
 (nombre_proveedor, proveedor_usuario_id, usuario_id) VALUES
 ('Google', 'google-oauth2|1234567890', 1),
 ('Facebook', 'fb-99887766', 2),
@@ -452,7 +492,7 @@ INSERT INTO finca_prueba.autenticacion_externa
 
 
 -- agrego detalle
-INSERT INTO finca_prueba.detalles
+INSERT INTO detalles
 (descripcion, cant_habitacion, cant_banio, metros_cuad, capacidad_max, wifi, piscina, parrilla) 
 VALUES
 ('Casa rural con hermosa vista a las montañas', 3, 2, 120, 6, TRUE, TRUE, TRUE),
@@ -461,7 +501,7 @@ VALUES
 
 
 -- agrego direccion
-INSERT INTO finca_prueba.direcciones
+INSERT INTO direcciones
 (calle, altura, ciudad, provincia, aclaracion) 
 VALUES
 ('Los Álamos', 1234, 'San Rafael', 'Mendoza', 'A 5 km del centro, camino a Valle Grande'),
@@ -470,7 +510,7 @@ VALUES
 
 
 -- agrego finca
-INSERT INTO finca_prueba.fincas
+INSERT INTO fincas
 (nombre, propietario_id, detalle_id, direccion_id, tarifa_hora) 
 VALUES
 ('Casa Montaña', 1, 1, 1, 30000.00),
@@ -479,7 +519,7 @@ VALUES
 
 
 -- agrego fechas especiales
-INSERT INTO finca_prueba.fechas_especiales 
+INSERT INTO fechas_especiales 
 (fecha, dia_semana, hora_inicio, hora_fin, descuento, recargo, motivo, finca_id) 
 VALUES
 ('2025-12-24', 'Martes', '18:00:00', '23:59:00', NULL, 1500.00, 'Nochebuena', 1),
@@ -488,7 +528,7 @@ VALUES
 
 
 -- agrego imagenes a fincas
-INSERT INTO finca_prueba.imagenes_fincas (url, es_portada, finca_id) VALUES
+INSERT INTO imagenes_fincas (url, es_portada, finca_id) VALUES
 ('https://mi-sitio.com/imagenes/finca1_1.jpg', TRUE, 1),
 ('https://mi-sitio.com/imagenes/finca2_1.jpg', TRUE, 2),
 ('https://mi-sitio.com/imagenes/finca3_2.jpg', FALSE, 3);
@@ -496,7 +536,7 @@ INSERT INTO finca_prueba.imagenes_fincas (url, es_portada, finca_id) VALUES
 
 
 -- agrego horarios
-INSERT INTO finca_prueba.horarios_funcionamiento 
+INSERT INTO horarios_funcionamiento 
 (finca_id, hora_inicio, hora_fin, dia_semana, descuento, recargo) 
 VALUES
 (1, '08:00:00', '20:00:00', 'Lunes', 0.00, 0.00),
@@ -505,7 +545,7 @@ VALUES
 
 
 -- agrego reserva
-INSERT INTO finca_prueba.reservas 
+INSERT INTO reservas 
 (finca_id, cliente_id, desde, hasta, total, estado) 
 VALUES
 (1, 1, '2025-06-15 10:00:00', '2025-06-15 14:00:00', 6000.00, TRUE),
@@ -521,7 +561,7 @@ VALUES
 (1, 3, '2025-01-15 10:00:00', '2025-06-15 14:00:00', 6000.00, TRUE);
 
 -- agrego modos de pago
-INSERT INTO finca_prueba.modo_de_pago (tipo, detalles) VALUES
+INSERT INTO modo_de_pago (tipo, detalles) VALUES
 ('Efectivo', 'Pagado en recepción'),
 ('Tarjeta', 'Visa'),
 ('Tarjeta', 'Mastercard'),
@@ -529,7 +569,7 @@ INSERT INTO finca_prueba.modo_de_pago (tipo, detalles) VALUES
 ('Transferencia', 'Bancaria');
 
 -- agrego pagos
-INSERT INTO finca_prueba.pagos (
+INSERT INTO pagos (
   reserva_id, monto_total, modopago_id, fecha_hora, descuento_aplicado, recargo_aplicado, estado_pago
 ) VALUES
 (1, 6000.00, 1, '2025-06-14 10:30:00', 1000.00, 0.00, TRUE),
@@ -547,7 +587,7 @@ INSERT INTO finca_prueba.pagos (
 
 -- agrego comprobantes de pago
 
-INSERT INTO finca_prueba.comprobante_pago (pago_id, monto, modo_id, descripcion) VALUES
+INSERT INTO comprobante_pago (pago_id, monto, modo_id, descripcion) VALUES
 (1, 6000.00, 1, 'Pago en efectivo en recepción'),
 (3, 7200.00, 4, 'Transferencia mercado pago confirmada'),
 (4, 7200.00, 3, 'Tarjeta Mastercard - cuotas sin interés'),
@@ -564,23 +604,23 @@ INSERT INTO finca_prueba.comprobante_pago (pago_id, monto, modo_id, descripcion)
 
 -- FINCAS ABIERTA LOS VIERNES
 SELECT f.nombre, hf.dia_semana, hf.hora_inicio, hf.hora_fin
-FROM finca_prueba.fincas f
-JOIN finca_prueba.horarios_funcionamiento hf ON f.id = hf.finca_id
+FROM fincas f
+JOIN horarios_funcionamiento hf ON f.id = hf.finca_id
 WHERE hf.dia_semana = 'Viernes';
 
 
 -- FECHAS ESPECIALES CON RECARGO
 SELECT f.nombre AS finca, fe.fecha, fe.motivo, fe.recargo
-FROM finca_prueba.fechas_especiales fe
-JOIN finca_prueba.fincas f ON fe.finca_id = f.id
+FROM fechas_especiales fe
+JOIN fincas f ON fe.finca_id = f.id
 WHERE fe.recargo IS NOT NULL AND fe.recargo > 0;
 
 
 -- USUARIOS CON ROL CLIENTE
 SELECT u.id, u.nombre_usuario, u.email
-FROM finca_prueba.usuarios u
-JOIN finca_prueba.usuario_rol ur ON u.id = ur.usuario_id
-JOIN finca_prueba.roles r ON ur.rol_id = r.id
+FROM usuarios u
+JOIN usuario_rol ur ON u.id = ur.usuario_id
+JOIN roles r ON ur.rol_id = r.id
 WHERE r.nombre = 'Cliente';
 
 
@@ -591,32 +631,32 @@ WHERE r.nombre = 'Cliente';
 -- CONSULTAS A LA BASE DE DATOS
 
 -- CONSULTA 1: historial de reservas realizadas por un cliente en específico
-SELECT finca_prueba.reservas.finca_id, finca_prueba.fincas.nombre, finca_prueba.reservas.desde, finca_prueba.reservas.hasta, finca_prueba.reservas.total, finca_prueba.reservas.estado
-FROM finca_prueba.reservas
-JOIN finca_prueba.fincas ON finca_prueba.reservas.finca_id = finca_prueba.fincas.id
-WHERE finca_prueba.reservas.cliente_id = 1;
+SELECT reservas.finca_id, fincas.nombre, reservas.desde, reservas.hasta, reservas.total, reservas.estado
+FROM reservas
+JOIN fincas ON reservas.finca_id = fincas.id
+WHERE reservas.cliente_id = 1;
 
 
 -- CONSULTA 2: pagos y su estado
-SELECT finca_prueba.pagos.id, finca_prueba.reservas.id AS reserva_id, finca_prueba.pagos.monto_total, finca_prueba.pagos.fecha_hora, finca_prueba.pagos.estado_pago
-FROM finca_prueba.pagos
-JOIN finca_prueba.reservas ON finca_prueba.pagos.reserva_id = finca_prueba.reservas.id;
+SELECT pagos.id, reservas.id AS reserva_id, pagos.monto_total, pagos.fecha_hora, pagos.estado_pago
+FROM pagos
+JOIN reservas ON pagos.reserva_id = reservas.id;
 
 
 -- CONSULTA 3: fechas especiales con descuentos
-SELECT finca_prueba.fincas.nombre, finca_prueba.fechas_especiales.fecha, finca_prueba.fechas_especiales.motivo, finca_prueba.fechas_especiales.descuento
-FROM finca_prueba.fechas_especiales
-JOIN finca_prueba.fincas ON finca_prueba.fechas_especiales.finca_id = finca_prueba.fincas.id
-WHERE finca_prueba.fechas_especiales.descuento IS NOT NULL AND finca_prueba.fechas_especiales.descuento > 0;
+SELECT f.nombre, fe.fecha, fe.motivo, fe.descuento
+FROM fechas_especiales fe
+JOIN fincas f ON fe.finca_id = f.id
+WHERE fe.descuento IS NOT NULL AND fe.descuento > 0;
 
 -- CONSULTA 4: n° de reservas por cada finca
-SELECT finca_prueba.fincas.nombre, COUNT(finca_prueba.reservas.id) AS total_reservas
-FROM finca_prueba.fincas
-LEFT JOIN finca_prueba.reservas ON finca_prueba.fincas.id = finca_prueba.reservas.finca_id
-GROUP BY finca_prueba.fincas.nombre;
+SELECT fincas.nombre, COUNT(finca_prueba.reservas.id) AS total_reservas
+FROM fincas
+LEFT JOIN reservas ON fincas.id = reservas.finca_id
+GROUP BY fincas.nombre;
 
 -- CONSULTA 5: responsables con sus telefonos
 
-SELECT finca_prueba.propietarios.nombre, finca_prueba.propietarios.apellido, finca_prueba.contactos.telefono, finca_prueba.contactos.email
-FROM finca_prueba.propietarios, finca_prueba.contactos
-WHERE finca_prueba.propietarios.id = finca_prueba.contactos.id;
+SELECT p.nombre, p.apellido, c.telefono, c.email
+FROM propietarios p, contactos c
+WHERE p.id = c.id;
