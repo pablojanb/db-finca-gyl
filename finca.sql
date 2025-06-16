@@ -10,7 +10,6 @@ CREATE TABLE finca_prueba.fincas (
   nombre VARCHAR(45) NOT NULL,
   propietario_id INT NOT NULL,
   detalle_id INT NOT NULL,
-  contacto_id INT NOT NULL,
   direccion_id INT NOT NULL,
   tarifa_hora DECIMAL(10, 2) NOT NULL,
   PRIMARY KEY (id))
@@ -340,6 +339,12 @@ ADD CONSTRAINT fk_propietarios_contacto
 FOREIGN KEY (contacto_id) REFERENCES finca_prueba.contactos(id)
 ON DELETE CASCADE;
 
+-- PROPIETARIO - usuario
+ALTER TABLE finca_prueba.propietarios
+ADD CONSTRAINT fk_propietarios_usuario
+FOREIGN KEY (usuario_id) REFERENCES finca_prueba.usuarios(id)
+ON DELETE CASCADE;
+
 -- DOCUMENTACION - propietario
 ALTER TABLE finca_prueba.documentacion
 ADD CONSTRAINT fk_documentacion_propietarios
@@ -359,25 +364,18 @@ INSERT INTO finca_prueba.permisos (nombre) VALUES
 ('Ver historial de clientes');
 
 
-
-
-
 -- agrego roles
 INSERT INTO finca_prueba.roles (nombre) VALUES
-('Administrador'),
-('Recepcionista'),
+('Propietario'),
 ('Cliente');
 
 
 -- asignos permisos a roles
 
 INSERT INTO finca_prueba.rol_permisos (rol_id, permiso_id) VALUES
-(1, 1), -- Administrador puede crear reservas
-(1, 2), -- Administrador puede modificar fincas
-(1, 3), -- Administrador puede ver historial
-(2, 1), -- Recepcionista puede crear reservas
-(2, 3), -- Recepcionista puede ver historial
-(3, 1); -- Cliente puede crear reservas
+(1, 3), -- Propietario puede ver historial de clientes
+(1, 2), -- Propietario puede modificar información de fincas
+(2, 1); -- Cliente puede crear reservas
 
 
 
@@ -386,9 +384,12 @@ INSERT INTO finca_prueba.rol_permisos (rol_id, permiso_id) VALUES
 -- agrego usuarios (cuenta_activa es por default true al crear)
 
 INSERT INTO finca_prueba.usuarios (nombre_usuario, email, contrasenia) VALUES
-('admin01', 'admin@finca.com', 'admin123'),
-('recepcion01', 'recep@finca.com', 'recep123'),
-('cliente01', 'cliente@finca.com', 'cliente123');
+('robertofinca', 'roberto@gmail.com', '123'),
+('eduardofinca', 'eduardo@gmail.com', '123'),
+('luciana2025', 'luciana@gmail.com', '123'),
+('martinasosa', 'martinasosa@gmail.com', '123'),
+('franciscolopez', 'franciscolopez@gmail.com', '123'),
+('marianaperezfinca', 'mariana@gmail.com', '123');
 
 /*
 UPDATE finca_prueba.usuarios
@@ -400,33 +401,36 @@ WHERE id = 1;
 -- asignos roles a usuarios
 INSERT INTO finca_prueba.usuario_rol (rol_id, usuario_id) VALUES
 (1, 1),
-(2, 2),
-(3, 3);
--- admin01 también es cliente por ejemplo
+(1, 2),
+(2, 3),
+(2, 4),
+(2, 5),
+(1, 6);
+-- robertofinca también es cliente por ejemplo
 INSERT INTO finca_prueba.usuario_rol (rol_id, usuario_id) VALUES
-(3, 1); 
+(2, 1); 
 
 
 -- agrego contacto
 INSERT INTO finca_prueba.contactos 
 (email, telefono, email_alternativo) 
 VALUES
-('info@casamontana.com', '+54 9 11 1234-5678', 'info2@casamontana.com'),
-('reservas@cabanalago.com', '+54 9 261 432-1987', 'reservas2@cabanalago.com'),
-('contacto@ranchorural.com', '+54 9 351 765-4321', 'contacto2@ranchorural.com');
+('roberto@gmail.com', '+54 9 11 1234-5678', 'info2@casamontana.com'),
+('eduardo@gmail.com', '+54 9 261 432-1987', 'reservas2@cabanalago.com'),
+('mariana@gmail.com', '+54 9 351 765-4321', 'contacto2@ranchorural.com');
 
 -- agrego propietarios
 INSERT INTO finca_prueba.propietarios (nombre, apellido, fecha_nac, contacto_id, usuario_id) VALUES
-('Carlos', 'Ramírez', '1980-05-12', 1, 1),
-('Lucía', 'González', '1992-09-23', 2, 2),
-('Miguel', 'Fernández', '1975-01-30', 3, 3);
+('Roberto', 'Ramírez', '1980-05-12', 1, 1),
+('Eduardo', 'González', '1992-09-23', 2, 2),
+('Mariana', 'Fernández', '1975-01-30', 3, 6);
 
 
 -- agrego clientes
 INSERT INTO finca_prueba.clientes (nombre, apellido, dni, correo, usuario_id) VALUES
-('Juan', 'Pérez', '30123456', 'juan.perez@gmail.com', 3),
-('Laura', 'Gómez', '28987654', 'laura.gomez@gmail.com', 2),
-('Carlos', 'Lopez', '32123456', 'carlos.lopez@gmail.com', 1);
+('Luciana', 'Pérez', '30123456', 'luciana@gmail.com', 3),
+('Martina', 'Sosa', '28987654', 'martinasosa@gmail.com', 4),
+('Francisco', 'Lopez', '32123456', 'franciscolopez@gmail.com', 5);
 
 /*
 DELETE FROM finca_prueba.clientes
@@ -443,7 +447,7 @@ INSERT INTO finca_prueba.autenticacion_externa
 (nombre_proveedor, proveedor_usuario_id, usuario_id) VALUES
 ('Google', 'google-oauth2|1234567890', 1),
 ('Facebook', 'fb-99887766', 2),
-('GitHub', 'github|carlitos_321', 3);
+('GitHub', 'github|luci_321', 3);
 
 
 
@@ -467,11 +471,11 @@ VALUES
 
 -- agrego finca
 INSERT INTO finca_prueba.fincas
-(nombre, propietario_id, detalle_id, contacto_id, direccion_id, tarifa_hora) 
+(nombre, propietario_id, detalle_id, direccion_id, tarifa_hora) 
 VALUES
-('Casa Montaña', 1, 1, 1, 1, 1500.00),
-('Cabaña Lago Azul', 2, 2, 2, 2, 1200.00),
-('Rancho Tilcara', 3, 3, 3, 3, 1800.00);
+('Casa Montaña', 1, 1, 1, 30000.00),
+('Cabaña Lago Azul', 2, 2, 2, 40000.00),
+('Rancho Tilcara', 3, 3, 3, 45000.00);
 
 
 -- agrego fechas especiales
@@ -506,8 +510,15 @@ INSERT INTO finca_prueba.reservas
 VALUES
 (1, 1, '2025-06-15 10:00:00', '2025-06-15 14:00:00', 6000.00, TRUE),
 (2, 2, '2025-06-16 15:00:00', '2025-06-16 18:00:00', 3600.00, FALSE),
-(3, 3, '2025-06-17 09:00:00', '2025-06-17 13:00:00', 7200.00, TRUE);
-
+(3, 3, '2025-06-17 09:00:00', '2025-06-17 13:00:00', 7200.00, TRUE),
+(3, 1, '2025-07-15 10:00:00', '2025-07-15 14:00:00', 7200.00, TRUE),
+(2, 1, '2025-07-16 15:00:00', '2025-07-16 18:00:00', 3600.00, FALSE),
+(3, 1, '2025-08-17 09:00:00', '2025-08-17 13:00:00', 7200.00, TRUE),
+(3, 2, '2025-05-15 10:00:00', '2025-05-15 14:00:00', 7200.00, TRUE),
+(2, 2, '2025-04-16 15:00:00', '2025-06-16 18:00:00', 3600.00, FALSE),
+(3, 3, '2025-03-17 09:00:00', '2025-06-17 13:00:00', 7200.00, TRUE),
+(2, 3, '2025-02-15 10:00:00', '2025-06-15 14:00:00', 6000.00, TRUE),
+(1, 3, '2025-01-15 10:00:00', '2025-06-15 14:00:00', 6000.00, TRUE);
 
 -- agrego modos de pago
 INSERT INTO finca_prueba.modo_de_pago (tipo, detalles) VALUES
@@ -521,17 +532,30 @@ INSERT INTO finca_prueba.modo_de_pago (tipo, detalles) VALUES
 INSERT INTO finca_prueba.pagos (
   reserva_id, monto_total, modopago_id, fecha_hora, descuento_aplicado, recargo_aplicado, estado_pago
 ) VALUES
-(1, 15000.00, 1, '2025-06-12 10:30:00', 1000.00, 0.00, TRUE),
-(2, 22000.00, 2, '2025-06-13 14:45:00', 0.00, 200.00, TRUE),
-(3, 18000.00, 3, '2025-06-14 11:15:00', 500.00, 0.00, FALSE);
+(1, 6000.00, 1, '2025-06-14 10:30:00', 1000.00, 0.00, TRUE),
+(2, 3600.00, 2, '2025-06-15 14:45:00', 0.00, 200.00, FALSE),
+(3, 7200.00, 4, '2025-06-16 11:15:00', 500.00, 0.00, TRUE),
+(4, 7200.00, 3, '2025-07-14 11:15:00', 500.00, 0.00, TRUE),
+(5, 3600.00, 3, '2025-07-15 11:15:00', 500.00, 0.00, FALSE),
+(6, 7200.00, 4, '2025-08-16 11:15:00', 500.00, 0.00, TRUE),
+(7, 7200.00, 4, '2025-05-14 11:15:00', 500.00, 0.00, TRUE),
+(8, 3600.00, 3, '2025-04-15 11:15:00', 500.00, 0.00, FALSE),
+(9, 7200.00, 5, '2025-03-16 11:15:00', 500.00, 0.00, TRUE),
+(10, 6000.00, 5, '2025-02-14 11:15:00', 500.00, 0.00, TRUE),
+(11, 6000.00, 3, '2025-01-14 11:15:00', 500.00, 0.00, TRUE);
 
 
 -- agrego comprobantes de pago
 
 INSERT INTO finca_prueba.comprobante_pago (pago_id, monto, modo_id, descripcion) VALUES
-(1, 15000.00, 1, 'Pago en efectivo en recepción'),
-(2, 22000.00, 2, 'Tarjeta Visa - cuotas sin interés'),
-(3, 18000.00, 3, 'Transferencia bancaria confirmada');
+(1, 6000.00, 1, 'Pago en efectivo en recepción'),
+(3, 7200.00, 4, 'Transferencia mercado pago confirmada'),
+(4, 7200.00, 3, 'Tarjeta Mastercard - cuotas sin interés'),
+(6, 7200.00, 4, 'Transferencia mercado pago confirmada'),
+(7, 7200.00, 4, 'Transferencia mercado pago confirmada'),
+(9, 7200.00, 5, 'Transferencia bancaria confirmada'),
+(10, 6000.00, 5, 'Transferencia bancaria confirmada'),
+(11, 6000.00, 3, 'Tarjeta Mastercard - cuotas sin interés');
 
 
 
@@ -552,9 +576,47 @@ JOIN finca_prueba.fincas f ON fe.finca_id = f.id
 WHERE fe.recargo IS NOT NULL AND fe.recargo > 0;
 
 
--- USUARIOS CON ROL ADMIN
+-- USUARIOS CON ROL CLIENTE
 SELECT u.id, u.nombre_usuario, u.email
 FROM finca_prueba.usuarios u
 JOIN finca_prueba.usuario_rol ur ON u.id = ur.usuario_id
 JOIN finca_prueba.roles r ON ur.rol_id = r.id
-WHERE r.nombre = 'Administrador';
+WHERE r.nombre = 'Cliente';
+
+
+
+
+
+
+-- CONSULTAS A LA BASE DE DATOS
+
+-- CONSULTA 1: historial de reservas realizadas por un cliente en específico
+SELECT finca_prueba.reservas.finca_id, finca_prueba.fincas.nombre, finca_prueba.reservas.desde, finca_prueba.reservas.hasta, finca_prueba.reservas.total, finca_prueba.reservas.estado
+FROM finca_prueba.reservas
+JOIN finca_prueba.fincas ON finca_prueba.reservas.finca_id = finca_prueba.fincas.id
+WHERE finca_prueba.reservas.cliente_id = 1;
+
+
+-- CONSULTA 2: pagos y su estado
+SELECT finca_prueba.pagos.id, finca_prueba.reservas.id AS reserva_id, finca_prueba.pagos.monto_total, finca_prueba.pagos.fecha_hora, finca_prueba.pagos.estado_pago
+FROM finca_prueba.pagos
+JOIN finca_prueba.reservas ON finca_prueba.pagos.reserva_id = finca_prueba.reservas.id;
+
+
+-- CONSULTA 3: fechas especiales con descuentos
+SELECT finca_prueba.fincas.nombre, finca_prueba.fechas_especiales.fecha, finca_prueba.fechas_especiales.motivo, finca_prueba.fechas_especiales.descuento
+FROM finca_prueba.fechas_especiales
+JOIN finca_prueba.fincas ON finca_prueba.fechas_especiales.finca_id = finca_prueba.fincas.id
+WHERE finca_prueba.fechas_especiales.descuento IS NOT NULL AND finca_prueba.fechas_especiales.descuento > 0;
+
+-- CONSULTA 4: n° de reservas por cada finca
+SELECT finca_prueba.fincas.nombre, COUNT(finca_prueba.reservas.id) AS total_reservas
+FROM finca_prueba.fincas
+LEFT JOIN finca_prueba.reservas ON finca_prueba.fincas.id = finca_prueba.reservas.finca_id
+GROUP BY finca_prueba.fincas.nombre;
+
+-- CONSULTA 5: responsables con sus telefonos
+
+SELECT finca_prueba.propietarios.nombre, finca_prueba.propietarios.apellido, finca_prueba.contactos.telefono, finca_prueba.contactos.email
+FROM finca_prueba.propietarios, finca_prueba.contactos
+WHERE finca_prueba.propietarios.id = finca_prueba.contactos.id;
