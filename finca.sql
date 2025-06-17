@@ -432,9 +432,14 @@ INSERT INTO usuarios (nombre_usuario, email, contrasenia) VALUES
 ('marianaperezfinca', 'mariana@gmail.com', '123');
 
 /*
-UPDATE finca_prueba.usuarios
-SET nombre_usuario = 'roberto'
+UPDATE usuarios
+SET nombre_usuario = 'robertoramirez'
 WHERE id = 1;
+*/
+
+/*
+DELETE FROM usuarios
+WHERE id = 2;
 */
 
 
@@ -459,11 +464,33 @@ VALUES
 ('eduardo@gmail.com', '+54 9 261 432-1987', 'reservas2@cabanalago.com'),
 ('mariana@gmail.com', '+54 9 351 765-4321', 'contacto2@ranchorural.com');
 
+/*
+UPDATE contactos
+SET email = 'marianafincas@gmail.com'
+WHERE id = 3;
+*/
+
+/*
+DELETE FROM contactos
+WHERE id = 3;
+*/
+
 -- agrego propietarios
 INSERT INTO propietarios (nombre, apellido, fecha_nac, contacto_id, usuario_id) VALUES
 ('Roberto', 'Ramírez', '1980-05-12', 1, 1),
 ('Eduardo', 'González', '1992-09-23', 2, 2),
 ('Mariana', 'Fernández', '1975-01-30', 3, 6);
+
+/*
+UPDATE propietarios
+SET apellido = 'Sosa'
+WHERE id = 2;
+*/
+
+/*
+DELETE FROM propietarios
+WHERE id = 2;
+*/
 
 
 -- agrego clientes
@@ -473,13 +500,12 @@ INSERT INTO clientes (nombre, apellido, dni, correo, usuario_id) VALUES
 ('Francisco', 'Lopez', '32123456', 'franciscolopez@gmail.com', 5);
 
 /*
-DELETE FROM finca_prueba.clientes
-WHERE id = 1;
-
-
-UPDATE finca_prueba.clientes
-SET apellido = 'perez'
+UPDATE clientes
+SET apellido = 'Perez'
 WHERE id = 2;
+
+DELETE FROM clientes
+WHERE id = 1;
 */
 
 -- agrego autenticacion externa
@@ -498,6 +524,15 @@ VALUES
 ('Casa rural con hermosa vista a las montañas', 3, 2, 120, 6, TRUE, TRUE, TRUE),
 ('Cabaña acogedora cerca del lago', 2, 1, 80, 4, TRUE, FALSE, TRUE),
 ('Amplio rancho para grupos grandes', 5, 3, 200, 12, FALSE, TRUE, TRUE);
+
+/*
+UPDATE detalles
+SET cant_habitacion = 4
+WHERE id = 1;
+
+DELETE FROM detalles
+WHERE id = 3;
+*/
 
 
 -- agrego direccion
@@ -542,6 +577,15 @@ VALUES
 (1, '08:00:00', '20:00:00', 'Lunes', 0.00, 0.00),
 (1, '07:00:00', '21:00:00', 'Viernes', 10.00, 0.00),
 (2, '06:00:00', '23:00:00', 'Sábado', 0.00, 5.00);
+
+/*
+UPDATE horarios_funcionamiento
+SET hora_inicio = 04:00:00, hora_fin = 22:00:00
+WHERE id = 3;
+
+DELETE FROM horarios_funcionamiento
+WHERE id = 3;
+*/
 
 
 -- agrego reserva
@@ -650,7 +694,7 @@ JOIN fincas f ON fe.finca_id = f.id
 WHERE fe.descuento IS NOT NULL AND fe.descuento > 0;
 
 -- CONSULTA 4: n° de reservas por cada finca
-SELECT fincas.nombre, COUNT(finca_prueba.reservas.id) AS total_reservas
+SELECT fincas.nombre, COUNT(reservas.id) AS total_reservas
 FROM fincas
 LEFT JOIN reservas ON fincas.id = reservas.finca_id
 GROUP BY fincas.nombre;
