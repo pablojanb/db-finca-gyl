@@ -704,3 +704,28 @@ GROUP BY fincas.nombre;
 SELECT p.nombre, p.apellido, c.telefono, c.email
 FROM propietarios p, contactos c
 WHERE p.id = c.id;
+
+SELECT f.id, f.nombre AS finca, d.ciudad
+FROM fincas f
+JOIN direcciones d ON f.direccion_id = d.id
+WHERE d.ciudad = 'San Rafael'
+
+
+
+
+
+DELIMITER //
+CREATE PROCEDURE propietario_fincas_ganancias_mensuales(
+	IN propietario_id INT,
+    IN mes INT
+)
+BEGIN
+	
+     SELECT f.propietario_id AS propietario, f.nombre AS finca, SUM(total) AS ganancia_total FROM reservas r
+	 JOIN fincas f ON f.id = r.finca_id
+     WHERE f.propietario_id = propietario_id 
+     AND MONTH(r.desde)=mes
+     GROUP BY f.id, f.nombre;
+END //
+DELIMITER ;
+CALL propietario_fincas_ganancias_mensuales(1,7);
